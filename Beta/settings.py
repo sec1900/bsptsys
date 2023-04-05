@@ -168,8 +168,8 @@ EMAIL_HOST = 'smtp.qq.com'
 # 邮件服务器端口
 EMAIL_PORT = 465
 # 发送邮件的帐户,该帐户必须开启POP3/SMTP服务
-EMAIL_HOST_USER = '424546210@qq.com'
+EMAIL_HOST_USER = '@qq.com'
 # 客户端授权密码
-EMAIL_HOST_PASSWORD = 'nseleahnmarjbijj'
+EMAIL_HOST_PASSWORD = 'nsj'
 # 设置默认发送邮件的帐户
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
