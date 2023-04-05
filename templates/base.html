@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+    {% load static %}
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>基于B/S的安全检测工具共享平台</title>
+    <link rel="icon" href="{% static 'images/favicon.ico' %}" type="image/x-icon" />
+    <link rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/4.3.1/css/bootstrap.min.css">
+    <script src="https://cdn.staticfile.org/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://cdn.staticfile.org/popper.js/1.15.0/umd/popper.min.js"></script>
+    <script src="https://cdn.staticfile.org/twitter-bootstrap/4.3.1/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="{% static 'layui/css/layui.css' %}">
+    <link rel="stylesheet" href="{% static 'css/index.css' %}">
+    <script src="{% static 'js/index.js' %}"></script>
+    <script src="{% static 'js/jquery.min.js' %}"></script>
+    <link rel="stylesheet" href="{% static 'dataProcess/b64.css' %}">
+</head>
+
+<body class="layui-layout-body">
+    <div class="layui-logo">logo</div> </div>
+    <div class="layui-layout layui-layout-admin">
+        <!-- 顶部标题栏 -->
+
+
+        <div class="container-fluid" style="padding: 0px 0px;">
+            <div class="row">
+                <div class="col-md-2" style="padding: 0px 0px;">
+                    <div class="layui-header">
+                        <div class="layui-logo" title="首页">
+                            <a href="{% url 'indexIndex' %}">
+                                <font style="color: white">安全检测</font>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-8 form-horizontal" style="background-color: #23262E;">
+                    {% if request.session.is_login %}
+                    <!-- 这里放导航栏 -->
+                    <div class="row">
+                        <div class="col-md-12">
+                            <ul>
+                                {% for nav in nav_list %}
+                                <li style="display: inline-block;margin: 10px;"><a href="{{ nav.nav_link }}">
+                                        <font color="white" size="5">
+                                            {{ nav.nav_name }}
+                                        </font>
+                                    </a>
+                                </li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </div>
+                    {% else %}
+                    <!-- 请先登录 -->
+                    {% endif %}
+                </div>
+                <div class="col-md-2" style="padding: 0px 0px;">
+                    <div class="layui-header ">
+                        <ul class="layui-nav layui-layout-right" style="padding: 0px 40px;">
+                            {% if  user.username  %}
+                            <li class="layui-nav-item">
+                                <a href="{% url 'userIndex' %}" title="用户中心">
+                                    {{ user.username }}
+                                </a>
+                                <dl class="layui-nav-child">
+                                    <dd><a href={% url 'userIndex' %}>个人中心</a></dd>
+                                    <dd><a href={% url 'userTask' %}>用户任务</a></dd>
+                                    <dd><a href="/admin">登录后台</a></dd>
+                                     <a href="{% url 'logout' %}" title="注销">退出登录</a>
+                                </dl>
+                            </li>
+                            {% else %}
+                            <li class=" layui-nav-item">
+                                <a href="{% url 'login' %}" title="登录">
+                                    登录
+                                </a>
+                            </li>
+                            <li class="layui-nav-item">
+                                <a href="{% url 'register' %}" title="注册">
+                                    注册
+                                </a>
+                            </li>
+                            {% endif %}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- 主体内容 -->
+        {% block content1%}
+        {% endblock %}
+
+    </div>
+
+    {% block content2%}
+    {% endblock %}
+</body>
+
+</html>

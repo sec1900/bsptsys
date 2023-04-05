@@ -1,0 +1,159 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+{% block content1%}
+<!-- 左侧导航栏 -->
+<div class="layui-side layui-bg-black">
+    <div class="layui-side-scroll">
+        <!-- 左侧导航区域（可配合layui已有的垂直导航） -->
+        <ul class="layui-nav layui-nav-tree" lay-filter="test">
+            {% for label in label_list%}
+            <li class="layui-nav-item layui-nav-itemed">
+                <a href="javascript:;">{{ label.label_name }}</a>
+                <dl class="layui-nav-child">
+                    {% for script in script_list %}
+                    {% if script.script_label.label_name == label.label_name %}
+                    <dd>
+                        <a href="{% url 'scriptDisplay' script.script_id %}">
+                            {{ script.script_name }}
+                        </a>
+                    </dd>
+                    {% endif %}
+                    {% endfor %}
+                </dl>
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+</div>
+
+<!-- 内容主体区域 -->
+<div class="layui-body" id="pocTest" style="padding: 15px;">
+    <div class="layui-row">
+        <div class="layui-col-md4">
+            <div class="grid-demo grid-demo-bg1">&nbsp;</div>
+        </div>
+        <div class="layui-col-md4">
+            <div class="grid-demo grid-demo-bg1">
+                <fieldset class="layui-elem-field layui-field-title" style="margin-top: 30px;">
+                    <legend>个人中心</legend>
+                </fieldset>
+                
+                <div class="layui-tab">
+                    <ul class="layui-tab-title">
+                        <!-- 如果是密码错误返回本页面则直接显示安全设置的内容 -->
+                        {% if tips%}
+                            <li>个人信息</li>
+                            <li class="layui-this">安全设置</li>
+                        {% else %}
+                            <li class="layui-this">个人信息</li>
+                            <li>安全设置</li>
+                        {% endif %}
+
+                    </ul>
+                    <!-- 如果是密码错误返回本页面则直接显示安全设置的内容 -->
+                    <div class="layui-tab-content ">
+                        {% if tips%}
+                            <div class="layui-tab-item">
+                        {% else %}
+                            <div class="layui-tab-item layui-show">
+                        {% endif %}
+                            用户名：{{ request.user.username }}
+                            <br />
+                            <br />
+                            邮箱地址：{{ request.user.email }}
+                            <br />
+                            <br />
+                            账号状态：{{ request.user.is_active }}
+                            <br />
+                            <br />
+                            最后一次登录时间：{{ request.user.last_login }}
+                        </div>
+                        {% if tips%}
+                            <div class="layui-tab-item layui-show">
+                        {% else %}
+                            <div class="layui-tab-item">
+                         {% endif %}
+                            {% if tips %}
+                                <div class="alert alert-danger" role="alert">
+                                    修改失败，请重试!
+                                </div>
+                            {% endif %}
+                            <form method="post" class="layui-form" action="{% url 'setPassword' %}" lay-filter="change_password">
+                                {% csrf_token %}
+                                <div class="layui-form-item">
+                                    <label class="layui-form-label">原密码:</label>
+                                    <div class="layui-input-block">
+                                        <input type="password" name="old_password" placeholder="请输入原密码" autocomplete="off" class="layui-input">
+                                    </div>
+                                </div>
+                                <div class="layui-form-item">
+                                    <label class="layui-form-label">新密码:</label>
+                                    <div class="layui-input-block">
+                                        <input type="password" name="new_password" placeholder="请输入新密码" autocomplete="off" class="layui-input">
+                                    </div>
+                                </div>
+                                <div class="layui-form-item">
+                                    <label class="layui-form-label">确认新密码:</label>
+                                    <div class="layui-input-block">
+                                        <input type="password" name="rep_password" placeholder="再次输入新密码" autocomplete="off" class="layui-input">
+                                    </div>
+                                </div>
+                                <div class="layui-form-item layui-col-md-offset2">
+                                    <div class="layui-input-block">
+                                        <button type="submit" class="layui-btn" lay-submit="" lay-filter="change_password_submit">立即提交</button>
+                                        &nbsp;&nbsp;&nbsp;
+                                        <button type="reset" class="layui-btn layui-btn-primary">重置信息</button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="layui-col-md4">
+            <div class="grid-demo grid-demo-bg1">&nbsp;</div>
+        </div>
+    </div>
+</div>
+
+<!-- 底部固定区域 -->
+<div class="layui-footer">
+    使用时请遵守法律法规，使用时产生的法律纠纷与本平台无关!!!
+    <b>
+        <font>【</font>
+    </b>
+    <b>
+        <font>当前服务器时间:</font>
+    </b>
+    <b>
+        <font id="dateTime" color="red"></font>
+    </b>
+    <b>
+        <font>】</font>
+    </b>
+</div>
+
+{% endblock %}
+
+{% block content2%}
+{% load staticfiles %}
+<script src="{% static "layui/layui.all.js" %}"></script>
+<script>
+    Date.prototype.format = function (fmt) {
+        var o = {
+            "y+": this.getFullYear, //年
+            "M+": this.getMonth() + 1, //月份
+            "d+": this.getDate(), //日
+            "h+": this.getHours(), //小时
+            "m+": this.getMinutes(), //分
+            "s+": this.getSeconds() //秒
+        };
+        if (/(y+)/.test(fmt)) fmt = fmt.replace(RegExp.$1, (this.getFullYear() + "").substr(4 - RegExp.$1.length));
+        for (var k in o)
+            if (new RegExp("(" + k + ")").test(fmt)) fmt = fmt.replace(RegExp.$1, (RegExp.$1.length == 1) ? (o[k]) : (("00" + o[k]).substr(("" + o[k]).length)));
+        return fmt;
+    }
+    setInterval("document.getElementById('dateTime').innerHTML = (new Date()).format('yyyy-MM-dd hh:mm:ss');", 1000);
+</script>
+{% endblock %}

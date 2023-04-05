@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% block content1 %}
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-sm-12" style="background-color:#122b40;padding: 60px;">
+                <h1><b><font color="white"><p style="text-align:center">基于B/S的安全检测工具共享平台</p></font></b></h1>
+            </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-4 offset-md-4" style="padding:60px;">
+                <form method="post" accept-charset="utf-8" autocomplete="off" role="form" class="form-horizontal">
+                    {% if tips %}
+                        <div class="alert alert-{{ alertType }}  alert-dismissable">
+                             {{ tips }}
+                            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">
+                                &times;
+                            </button>
+                        </div>
+                    {% endif %}
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <h3>                                 用户登录     </h3>
+                        <hr>
+                        <label for="username">
+                            用户名
+                        </label>
+                        <input class="form-control" type="text" name="username" id="username" placeholder="请输入您的用户名"/>
+                    </div>
+                    <div class="form-group">
+                        <label for="password">
+                            密码
+                        </label>
+                        <input class="form-control" type="password" name="password" id="password"
+                               placeholder="请输入您的密码"/>
+                    </div>
+                    <div class="row pt-3">
+                        <div class="col-md-6">
+                            <a class="float-left align-text-to-button" href="{% url 'resetPassword' %}">
+                                忘记密码?
+                            </a>
+                        </div>
+                        <div class="col-md-6">
+                            <button type="submit" tabindex="0" class="btn btn-md btn-primary btn-outlined float-right">
+                                登录
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    {% load staticfiles %}
+    <script src="{% static "layui/layui.all.js" %}"></script>
+{% endblock %}

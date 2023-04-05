@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+{% block content1%}
+<!-- 左侧导航栏 -->
+<div class="layui-side layui-bg-cyan">
+    <div class="layui-side-scroll">
+        <!-- 左侧导航区域（可配合layui已有的垂直导航） -->
+        <ul class="layui-nav layui-bg-cyan layui-nav-tree" lay-filter="test" >
+            {% for label in label_list%}
+                <li class="layui-nav-item layui-bg-cyan layui-nav-itemed">
+                    <a href="javascript:;">{{ label.label_name }}</a>
+                    <dl class="layui-nav-child layui-bg-cyan">
+                        {% for script in script_list %}
+                            {% if script.script_label.label_name == label.label_name %}
+                                <dd>
+                                    <a href="{% url 'scriptDisplay' script.script_id %}">
+                                        {{ script.script_name }}
+                                    </a>
+                                </dd>
+                            {% endif %}
+                        {% endfor %}
+                    </dl>
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
+</div>
+
+<!-- 内容主体区域 -->
+<div class="layui-body " id="pocTest"  style="padding: 15px;">
+        <!-- 功能页面展示面板
+         如果变量是可信任的，那么可以使用“autoescape”标签来关掉自动转义
+         参考资料：https://www.jb51.net/article/178687.htm
+         -->
+        {% autoescape off %}
+            {{ display }}
+        {% endautoescape %}
+</div>
+
+<!-- 底部固定区域 -->
+<div class="layui-footer">
+    本工具仅用于学习研究使用，请勿用作非法用途，否则后果一切自负
+    <b>
+        <font>【</font>
+    </b>
+    <b>
+        <font>当前时间:</font>
+    </b>
+    <b>
+        <font id="dateTime" color="red"></font>
+    </b>
+    <b>
+        <font>】</font>
+    </b>
+</div>
+
+{% endblock %}
+
+{# JS操作 #}
+{% block content2%}
+{% load staticfiles %}
+<script src="{% static "layui/layui.all.js" %}"></script>
+    <script>
+        {# 获取当前时间，显示在底部栏 #}
+        Date.prototype.format = function (fmt) {
+            var o = {
+                "y+": this.getFullYear, //年
+                "M+": this.getMonth() + 1, //月份
+                "d+": this.getDate(), //日
+                "h+": this.getHours(), //小时
+                "m+": this.getMinutes(), //分
+                "s+": this.getSeconds() //秒
+            };
+            if (/(y+)/.test(fmt)) fmt = fmt.replace(RegExp.$1, (this.getFullYear() + "").substr(4 - RegExp.$1.length));
+            for (var k in o)
+                if (new RegExp("(" + k + ")").test(fmt)) fmt = fmt.replace(RegExp.$1, (RegExp.$1.length == 1) ? (o[k]) : (("00" + o[k]).substr(("" + o[k]).length)));
+            return fmt;
+        }
+        setInterval("document.getElementById('dateTime').innerHTML = (new Date()).format('yyyy-MM-dd hh:mm:ss');", 1000);
+    </script>
+    {% block content3 %}
+    {% endblock %}
+{% endblock %}

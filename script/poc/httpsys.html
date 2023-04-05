@@ -1,0 +1,41 @@
+
+<div class="layui-body" id="pocTest" style="padding: 15px;">
+    <div class="layui-row">
+        <div class="layui-col-md2">
+            <div class="grid-demo grid-demo-bg1">&nbsp;</div>
+        </div>
+        <div class="layui-col-md6">
+            <div class="grid-demo grid-demo-bg1">
+                <div class="h2 col-md-offset-4"><b>httpsys漏洞检测</b></div>
+                <hr>
+                <form method="post" role="form" action="" name="scriptform" target="_blank">
+                    {% csrf_token %}
+                    <!-- scriptID这个元素一定要，用来让后台识别是调用哪个脚本 -->
+                    <div class="form-group" hidden>
+                        <label for="scriptID">脚本名称</label>
+                        <input type="text" class="form-control" id="scriptID" name='scriptID' placeholder="脚本ID"
+                               value="{{ script_id }}">
+                    </div>
+                    <!-- 下面按需增加元素 -->
+                    <div>
+                        <a href="#">httpsys漏洞检测</a>
+                    </div>
+
+                    <textarea class="form-control" rows="3" name="-i" placeholder="请输入要检测的ip"></textarea>
+                    <button class="btn btn-success col-md-offset-2 submitbtn" onclick="submissions()"><b>提 交</b></button>
+                </form>
+            </div>
+        </div>
+        <div class="layui-col-md4">
+            <div class="grid-demo grid-demo-bg1">&nbsp;</div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // 点【提交】时响应，后台直接处理返回结果。适合时间需要立即响应结果且花费时间少的任务
+    function submissions() {
+        document.scriptform.action = "{% url 'scriptCall'  %}";
+        {#document.scriptform.submit();  layUi,在form表单中的button默认的type类型为submit,点击后就会提交表单,所以没必要再提交一次#}
+    }
+</script>

@@ -1,0 +1,125 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+{% block content1%}
+<!-- 左侧导航栏 -->
+<div class="layui-side layui-bg-black">
+    <div class="layui-side-scroll">
+        <!-- 左侧导航区域（可配合layui已有的垂直导航） -->
+        <ul class="layui-nav layui-nav-tree" lay-filter="test">
+            {% for label in label_list%}
+            <li class="layui-nav-item layui-nav-itemed">
+                <a href="javascript:;">{{ label.label_name }}</a>
+                <dl class="layui-nav-child">
+                    {% for script in script_list %}
+                    {% if script.script_label.label_name == label.label_name %}
+                    <dd>
+                        <a href="{% url 'scriptDisplay' script.script_id %}">
+                            {{ script.script_name }}
+                        </a>
+                    </dd>
+                    {% endif %}
+                    {% endfor %}
+                </dl>
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+</div>
+
+<!-- 内容主体区域 -->
+<div class="layui-body" id="pocTest" style="padding: 15px;">
+    <center>
+        <div class="h1"><b>用户任务列表</b></div>
+    </center>
+    <hr />
+    <table class="layui-hide" id="usertasklist" lay-filter="usertasklist">
+    </table>
+</div>
+
+<!-- 底部固定区域 -->
+<div class="layui-footer">
+   本工具仅用于学习研究使用，请勿用作非法用途，否则后果一切自负
+    <b>
+        <font>【</font>
+    </b>
+    <b>
+        <font>当前服务器时间:</font>
+    </b>
+    <b>
+        <font id="dateTime" color="red"></font>
+    </b>
+    <b>
+        <font>】</font>
+    </b>
+</div>
+
+{% endblock %}
+
+{% block content2%}
+    {% load staticfiles %}
+    {#  加载layuiJS文件  #}
+    <script src="{% static "layui/layui.all.js" %}"></script>
+    <script>
+        {# 显示实时时间 #}
+        Date.prototype.format = function (fmt) {
+            var o = {
+                "y+": this.getFullYear, //年
+                "M+": this.getMonth() + 1, //月份
+                "d+": this.getDate(), //日
+                "h+": this.getHours(), //小时
+                "m+": this.getMinutes(), //分
+                "s+": this.getSeconds() //秒
+            };
+            if (/(y+)/.test(fmt)) fmt = fmt.replace(RegExp.$1, (this.getFullYear() + "").substr(4 - RegExp.$1.length));
+            for (var k in o)
+                if (new RegExp("(" + k + ")").test(fmt)) fmt = fmt.replace(RegExp.$1, (RegExp.$1.length == 1) ? (o[k]) : (("00" + o[k]).substr(("" + o[k]).length)));
+            return fmt;
+        }
+        setInterval("document.getElementById('dateTime').innerHTML = (new Date()).format('yyyy-MM-dd hh:mm:ss');", 1000);
+
+        {# 生成用户任务表，把layui的数据表搞懂，这块就知道怎么做了 参考：https://www.layuion.com/doc/modules/table.html#}
+        layui.use('table', function () {
+            var table = layui.table;
+            table.render({
+                elem: '#usertasklist' // 绑定容器
+                , url: 'usertaskapi.json'  // 异步获取数据
+                , cellMinWidth: 160
+                , height: 'full'
+                , width: 'full'
+                , limit: 10   // 每页条数
+                , page: true //开启分页
+                , cols: [[ //表头
+                    { field: 'username', width: 100, title: '操作用户' }
+                    , { field: 'task_id', width: 300, title: '任务ID' }
+                    , { field: 'status', width: 100, title: '任务状态' }
+                    , { field: 'task_args', width: 300, title: '任务指令' }
+                    , { field: 'date_start', width: 250, title: '开始时间', sort: true }
+                    , { field: 'date_done', width: 250, title: '结束时间', sort: true }
+                ]]
+
+            });
+
+            //监听行单击事件（双击事件为：rowDouble）
+            table.on('row(usertasklist)', function (obj) {
+                var task_id = obj.data.task_id
+                $.ajax({
+                    url: "/user/taskresult.html",
+                    data: { 'task_id': task_id },
+                    type: "GET",
+                    dataType: "text",
+                    success: function (data) {
+                        layer.alert(JSON.stringify(data), {
+                            title: '任务结果'
+                        });
+                    },
+                    error: function (data) {
+                        $.messager.alert('错误', data.msg);
+                    }
+                });
+
+                //标注选中样式
+                obj.tr.addClass('layui-table-click').siblings().removeClass('layui-table-click');
+            });
+        });
+    </script>
+{% endblock %}
